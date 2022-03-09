@@ -1,35 +1,12 @@
 # coding=utf-8
 
 import re
+import json
+import argparse
 import nltk  # nltk is used for count distance between two texts.
 import random
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
-
-
-# First primitive config info for bot. Contains intents info and phrases for failure cases.
-# Intents is like classes for phrases. Every phrase can be classified, e. g. "Hello", "Hi", "Good afternoon"
-# or "Good morning" are greetings.
-# TODO move to the separate file
-BOT_CONFIG = {
-    "intents": {
-        "hello": {
-            "examples": [
-                "Hello", "Hi", "Good afternoon", "Good morning", "Hey", "Yo", "Good evening",
-                "Nice to meet you", "Pleased to meet you", "Yoyo", ],
-            "responses": ["Hi", "Hello", "Good to see you", "Nice to see you"],
-        },
-        "bye": {
-            "examples": ["Goodbye", "Bye", "Bye Bye", "See you later", "Seeya", "See you", "I’m off", "Stay safe"],
-            "responses": ["Goodbye", "Bye", "See you later"]
-        },
-        "how_are_you": {
-            "examples": ["Are you OK", "You alright", "Alright mate", "Howdy", "Sup", "Whazzup"],
-            "responses": ["Awesome", "Fantastic", "I’m fine", "Not bad"],
-        },
-    },
-    "failure_phrases": ["I do not understand. Try again."]
-}
 
 
 def normalize(text):
@@ -112,7 +89,7 @@ def create_model():
     TODO Move to a separate script because creation of a model is a rare thing I hope.
     TODO Store already prepared model in a separate file.
     Creates a ML model. The task of the model is to learn how to find intent "y" by input example "x".
-    :return: sklearn.feature_extraction.text.CountVectorizer and sklearn.linear_model._logistic.LogisticRegression
+    :return: set with sklearn.feature_extraction.text.CountVectorizer \and sklearn.linear_model._logistic.LogisticRegression objects
     """
 
     # Examples.
@@ -177,8 +154,29 @@ def bot(text):
     return random.choice(failure_phrases)
 
 
+def get_args():
+    """
+    Get values of input args.
+    :return: argparse.Namespace, set of named input args.
+    """
+    parser = argparse.ArgumentParser(description='Bot configuration.')
+    parser.add_argument('config', type=str, help='Path to the bot configuration file.')
+    return parser.parse_args()
+
+
 # Just for rough testing
 if __name__ == '__main__':
+
+    # Get args
+    args = get_args()
+
+    # Load bot config
+    # TODO check that file is exist
+    # TODO process parsing errors
+    # TODO launch documentation
+    # TODO Add config structure description
+    with open(args.config, "r") as ffile:
+        BOT_CONFIG = json.load(ffile)
 
     # Create the vectorizer and model objects before running the bot
     vectorizer, model = create_model()
