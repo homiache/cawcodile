@@ -61,7 +61,7 @@ def get_intent(text):
     """
 
     # Check all examples of intents, trying to find a match.
-    all_intents = BOT_CONFIG["intents"]
+    all_intents = bot_config["intents"]
     for intent_name, data in all_intents.items():
         for example in data["examples"]:
             if is_matching(text, example):
@@ -79,7 +79,7 @@ def get_answer(intent):
     """
 
     # TODO process invalid value
-    responses = BOT_CONFIG["intents"][intent]["responses"]
+    responses = bot_config["intents"][intent]["responses"]
     return random.choice(responses)
 
 
@@ -99,7 +99,7 @@ def create_model():
     y = []
 
     # Create two lists of examples and intents.
-    for name, data in BOT_CONFIG["intents"].items():
+    for name, data in bot_config["intents"].items():
         for example in data['examples']:
 
             # Get all examples in an one list x.
@@ -150,7 +150,7 @@ def bot(text):
 
     # Mock
     # TODO Need to understand if this code will ever be executed. Seems like model never gives up.
-    failure_phrases = BOT_CONFIG['failure_phrases']
+    failure_phrases = bot_config['failure_phrases']
     return random.choice(failure_phrases)
 
 
@@ -164,6 +164,18 @@ def get_args():
     return parser.parse_args()
 
 
+def load_bot_config(path_to_config):
+    # Load bot config
+    # TODO check that file is exist
+    # TODO process parsing errors
+    # TODO launch documentation
+    # TODO Add config structure description
+    with open(path_to_config, "r") as ffile:
+        result = json.load(ffile)
+
+    return result
+
+
 # Just for rough testing
 if __name__ == '__main__':
 
@@ -171,12 +183,7 @@ if __name__ == '__main__':
     args = get_args()
 
     # Load bot config
-    # TODO check that file is exist
-    # TODO process parsing errors
-    # TODO launch documentation
-    # TODO Add config structure description
-    with open(args.config, "r") as ffile:
-        BOT_CONFIG = json.load(ffile)
+    bot_config = load_bot_config(args.config)
 
     # Create the vectorizer and model objects before running the bot
     vectorizer, model = create_model()
