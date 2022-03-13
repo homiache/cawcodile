@@ -1,0 +1,61 @@
+{
+  "description": "First primitive config info for bot. Contains intents info and phrases for failure cases. Intents is like classes for phrases. Every phrase can be classified, e. g. \"Hello\", \"Hi\", \"Good afternoon\" or \"Good morning\" are greetings.",
+  "intents": {
+    "hello": {
+      "examples": [
+        "Hello",
+        "Hi",
+        "Good afternoon",
+        "Good morning",
+        "Hey",
+        "Yo",
+        "Good evening",
+        "Nice to meet you",
+        "Pleased to meet you",
+        "Yoyo"
+      ],
+      "responses": [
+        "Hi",
+        "Hello",
+        "Good to see you",
+        "Nice to see you"
+      ]
+    },
+    "bye": {
+      "examples": [
+        "Goodbye",
+        "Bye",
+        "Bye Bye",
+        "See you later",
+        "Seeya",
+        "See you",
+        "I’m off",
+        "Stay safe"
+      ],
+      "responses": [
+        "Goodbye",
+        "Bye",
+        "See you later"
+      ]
+    },
+    "how_are_you": {
+      "examples": [
+        "Are you OK",
+        "You alright",
+        "Alright mate",
+        "Howdy",
+        "Sup",
+        "Whazzup"
+      ],
+      "responses": [
+        "Awesome",
+        "Fantastic",
+        "I’m fine",
+        "Not bad"
+      ]
+    }
+  },
+  "failure_phrases": [
+    "I do not understand. Try again."
+  ]
+}

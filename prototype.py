@@ -1,35 +1,12 @@
 # coding=utf-8
 
 import re
+import json
+import argparse
 import nltk  # nltk is used for count distance between two texts.
 import random
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
-
-
-# First primitive config info for bot. Contains intents info and phrases for failure cases.
-# Intents is like classes for phrases. Every phrase can be classified, e. g. "Hello", "Hi", "Good afternoon"
-# or "Good morning" are greetings.
-# TODO move to the separate file
-BOT_CONFIG = {
-    "intents": {
-        "hello": {
-            "examples": [
-                "Hello", "Hi", "Good afternoon", "Good morning", "Hey", "Yo", "Good evening",
-                "Nice to meet you", "Pleased to meet you", "Yoyo", ],
-            "responses": ["Hi", "Hello", "Good to see you", "Nice to see you"],
-        },
-        "bye": {
-            "examples": ["Goodbye", "Bye", "Bye Bye", "See you later", "Seeya", "See you", "I’m off", "Stay safe"],
-            "responses": ["Goodbye", "Bye", "See you later"]
-        },
-        "how_are_you": {
-            "examples": ["Are you OK", "You alright", "Alright mate", "Howdy", "Sup", "Whazzup"],
-            "responses": ["Awesome", "Fantastic", "I’m fine", "Not bad"],
-        },
-    },
-    "failure_phrases": ["I do not understand. Try again."]
-}
 
 
 def normalize(text):
@@ -84,7 +61,7 @@ def get_intent(text):
     """
 
     # Check all examples of intents, trying to find a match.
-    all_intents = BOT_CONFIG["intents"]
+    all_intents = bot_config["intents"]
     for intent_name, data in all_intents.items():
         for example in data["examples"]:
             if is_matching(text, example):
@@ -102,7 +79,7 @@ def get_answer(intent):
     """
 
     # TODO process invalid value
-    responses = BOT_CONFIG["intents"][intent]["responses"]
+    responses = bot_config["intents"][intent]["responses"]
     return random.choice(responses)
 
 
@@ -112,7 +89,7 @@ def create_model():
     TODO Move to a separate script because creation of a model is a rare thing I hope.
     TODO Store already prepared model in a separate file.
     Creates a ML model. The task of the model is to learn how to find intent "y" by input example "x".
-    :return: sklearn.feature_extraction.text.CountVectorizer and sklearn.linear_model._logistic.LogisticRegression
+    :return: set with sklearn.feature_extraction.text.CountVectorizer \and sklearn.linear_model._logistic.LogisticRegression objects
     """
 
     # Examples.
@@ -122,7 +99,7 @@ def create_model():
     y = []
 
     # Create two lists of examples and intents.
-    for name, data in BOT_CONFIG["intents"].items():
+    for name, data in bot_config["intents"].items():
         for example in data['examples']:
 
             # Get all examples in an one list x.
@@ -173,12 +150,40 @@ def bot(text):
 
     # Mock
     # TODO Need to understand if this code will ever be executed. Seems like model never gives up.
-    failure_phrases = BOT_CONFIG['failure_phrases']
+    failure_phrases = bot_config['failure_phrases']
     return random.choice(failure_phrases)
+
+
+def get_args():
+    """
+    Get values of input args.
+    :return: argparse.Namespace, set of named input args.
+    """
+    parser = argparse.ArgumentParser(description='Bot configuration.')
+    parser.add_argument('config', type=str, help='Path to the bot configuration file.')
+    return parser.parse_args()
+
+
+def load_bot_config(path_to_config):
+    # Load bot config
+    # TODO check that file is exist
+    # TODO process parsing errors
+    # TODO launch documentation
+    # TODO Add config structure description
+    with open(path_to_config, "r") as ffile:
+        result = json.load(ffile)
+
+    return result
 
 
 # Just for rough testing
 if __name__ == '__main__':
+
+    # Get args
+    args = get_args()
+
+    # Load bot config
+    bot_config = load_bot_config(args.config)
 
     # Create the vectorizer and model objects before running the bot
     vectorizer, model = create_model()
